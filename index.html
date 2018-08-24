@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <title>LinkToSelection</title>
+  <style type="text/css" id="one_style">/* No rules here. Replaced dynamically. */</style>
+  <script type="text/javascript">
+      "use strict";
+      
+      // user agents from https://developer.mozilla.org/en-US/docs/Web/API/Window/navigator
+      var browser; // user's browser, if supported; one of keys in browsers, or undefined
+      var browser2extension= {
+        Firefox: 'https://moz',
+        Opera: 'https://opera',
+        Chrome: 'https://chrome'
+      };
+      
+      for( var b in browser2extension ) {
+        if( navigator.userAgent.indexOf(b)>=0 ) {
+            browser= b;
+            break;
+        }
+      }
+      
+      function elem(id) { return document.getElementById(id); }
+      
+      /** Generate CSS to hide elements of a class with name based on
+        *- prefix + '_' +
+        *- 'not_' if when is false+
+        *- postfix.
+        @param boolean Whether to hide a 'positive' CSS class. If false, then 'negative' ('not_'-based class) will be hidden instead.
+        @param string CSS class name prefix
+        @param string CSS class name postfix
+      */
+      function hideCSS( when, prefix, postfix ) {
+        var className= prefix+ '_' +(when ? '' : 'not_') +postfix;
+        return '.' +className+ " {display: none;}\n";
+      }
+      
+      window.addEventListener('DOMContentLoaded', function() {
+        // 1. supported browsers
+        // show a link to browser-specific extension. <-- Do Google Chrome
+        
+        var CSS= '';
+        CSS+= hideCSS( location.hash==='', 'link', 'given' );
+        CSS+= hideCSS( !browser, 'browser', 'supported' );
+        elem('one_style').innerHTML= CSS;
+        
+        if( browser ) {
+            elem('browser').innerText= browser;
+            elem('extension').setAttribute('href', browser2extension[browser] );
+        }
+        if( location.hash ) {
+            elem('target').setAttribute('href', unescape(location.hash) );
+            elem('target').innerText= unescape(location.hash);
+        }
+      });
+  </script>
+ </head>
+ <body>
+        <p>
+            <span class="link_given">
+                You have followed a link to a specific selection of a page.
+            </span>
+            <span class="link_not_given">
+                LinkToSelection enables you to link to a page, along with a part that you selected.
+            </span>
+            <span class="browser_supported">
+                Please, install <a href="#" id="extension">LinkToSelection</a>, an extension to <a name="browser" id="browser">your browser</a>.
+            </span>
+            <span class="link_given browser_supported">
+                It will enable you to see the page with that selection.
+            </span>
+            <span class="browser_not_supported">
+                However, your browser doesn't support this functionality, unfortunately.
+            </span>
+        </p>
+        <p>
+            <span class="browser_not_supported">
+                Please, install either <a href="https://www.mozilla.org/firefox/download/">Mozilla Firefox</a>, <a href="https://www.google.com/chrome/">Google Chrome</a> or <a href="https://www.opera.com/download">Opera</a>. Then visit <a href="#" id="">this page</a> again.
+            </span>
+            <span class="link_given">
+                Otherwise, you can visit <a href="" id="target"></a> without LinkToSelection. However, you won't be able to see the selected part, unfortunately.
+            </span>
+        </p>
+ </body>
+ </html>
